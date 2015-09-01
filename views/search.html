@@ -1,0 +1,106 @@
+{{#if ebay.Image}}
+<img class="search-image" src="{{ebay.Image}}" alt="Item">
+{{else}}
+{{#if amazon.Image}}
+<img class="search-image" src="{{amazon.Image}}" alt="Item">
+{{/if}}
+{{/if}}
+<br>
+{{#if zap.Title}}
+<label class="search-label" name="zaptitle">{{zap.Title}}</label>
+{{/if}}
+<br>
+<script>
+    function getShippingCost() {
+        var httpRequest = new XMLHttpRequest();
+        var url = "http://open.api.ebay.com/shopping?" +
+                "callname=GetShippingCosts&" +
+                "responseencoding=JSON&" +
+                "appid=nonamec97-dbe0-4791-9985-731e31e5d36&" +
+                "siteid=0&" +
+                "version=771&"+
+                "ItemID={{ebay.Id}}&" +
+                "DestinationCountryCode=IL&" +
+                "IncludeDetails=true";
+
+        httpRequest.open('GET', url, true);
+        httpRequest.onreadystatechange = function () {
+
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                var jsonResponse = JSON.parse(httpRequest.responseText);
+                if (jsonResponse.ShippingCostSummary) {
+                    if (jsonResponse.ShippingCostSummary.ShippingServiceCost) {
+                        document.getElementById('shipprice').innerHTML = jsonResponse.ShippingCostSummary.ShippingServiceCost.Value;
+                    } else {
+                        document.getElementById('shipprice').innerHTML = 0;
+                    }
+                } else {
+                    document.getElementById('shipprice').innerHTML = 0;
+                }
+            } else {
+                document.getElementById('shipprice').innerHTML = 0;
+            }
+        };
+
+        httpRequest.send();
+    }
+    getShippingCost();
+</script>
+
+<div id="table" class="search-table">
+    <table id="orderTable" align="center">
+        <tr>
+            {{#if zap.Id}}
+            <th class="title">
+                <img class="search-shopping-image" src="zap.jpg">
+            </th>
+            {{/if}}
+            {{#if ebay.Id}}
+            <th class="title">
+                <img class="search-shopping-image" src="ebay.jpg">
+            </th>
+            {{/if}}
+            {{#if amazon.Id}}
+            <th class="title">
+                <img class="search-shopping-image" src="amazon.jpg">
+            </th>
+            {{/if}}
+        </tr>
+        <tr>
+            {{#if zap.Price}}
+            <td class="cell">
+                <label class="search-label" name="zapprice">{{zap.Price}} NIS</label>
+            </td>
+            {{/if}}
+            {{#if ebay.Price}}
+            <td class="cell">
+                <label class="search-label" name="ebayprice">{{ebay.Price}}</label>
+                <br>
+                <div class="search-label">Shipping price: $<span id="shipprice"></span></div>
+            </td>
+            {{/if}}
+            {{#if amazon.Price}}
+            <td class="cell">
+                <label class="search-label" name="amazonprice">{{amazon.Price}}</label>
+            </td>
+            {{/if}}
+        </tr>
+        <tr>
+            {{#if zap.Link}}
+            <td class="cell">
+                <a class="search-label" href="{{zap.Link}}">Watch</a>
+            </td>
+            {{/if}}
+            {{#if ebay.Link}}
+            <td class="cell">
+                <a class="search-label" href="{{ebay.Link}}">Watch</a>
+            </td>
+            {{/if}}
+            {{#if amazon.Link}}
+            <td class="cell">
+                <a class="search-label" href="{{amazon.Link}}">Watch</a>
+            </td>
+            {{/if}}
+        </tr>
+    </table>
+</div>
